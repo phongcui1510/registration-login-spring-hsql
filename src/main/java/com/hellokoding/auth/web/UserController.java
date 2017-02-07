@@ -1,16 +1,21 @@
 package com.hellokoding.auth.web;
 
-import com.hellokoding.auth.model.User;
-import com.hellokoding.auth.service.SecurityService;
-import com.hellokoding.auth.service.UserService;
-import com.hellokoding.auth.validator.UserValidator;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.hellokoding.auth.model.User;
+import com.hellokoding.auth.service.SecurityService;
+import com.hellokoding.auth.service.UserService;
+import com.hellokoding.auth.validator.UserValidator;
 
 @Controller
 public class UserController {
@@ -29,10 +34,15 @@ public class UserController {
 
         return "registration";
     }
+    
+    @InitBinder("userForm")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(userValidator);
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
-        userValidator.validate(userForm, bindingResult);
+    public String registration(@Valid @ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
+//        userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "registration";
